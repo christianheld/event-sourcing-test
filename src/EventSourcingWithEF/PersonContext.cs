@@ -19,6 +19,5 @@ public class PersonContext : DbContext
 
         var persons = modelBuilder.Entity<PersonEntity>();
         persons.ToTable("persons");
-        persons.ConfigureEventStore<PersonEntity, Guid, NameEvent>();
     }
 }

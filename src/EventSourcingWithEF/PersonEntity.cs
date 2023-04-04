@@ -1,44 +1,41 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace EventSourcingWithEF;
 
-public class PersonEntity : EventEntity<Guid, NameEvent>
+[Index(nameof(Name))]
+public class PersonEntity : EventEntity<PersonEvent>
+{
+    [Column("name")]
+    public string? Name { get; set; }
+}
+
+public interface IPersonStore : IEventStore<PersonEvent>
 {
 }
 
-public interface IPersonStore : IEventStore<Guid, NameEvent>
+public class PersonStore : EventStore<PersonEntity, PersonEvent>, IPersonStore
 {
-}
-
-public class PersonStore : EventStore<PersonEntity, Guid, NameEvent>, IPersonStore
-{
-    public PersonStore(DbSet<PersonEntity> dbset) : base(dbset)
+    public PersonStore(PersonContext context)
+        : base(context, context.Persons)
     {
+    }
+
+    protected override void OnAppended(PersonEntity entity)
+    {
+        base.OnAppended(entity);
     }
 }
 
-public class Person
+public class Person : EventSourcedModel<PersonEvent>
 {
-    private readonly List<NameEvent> _unconfirmedEvents = new();
     private string _name = "";
-    private int _confirmedVersion;
 
     public Person(Guid id)
-        : this(id, Array.Empty<NameEvent>())
+        : base(id)
+
     {
-    }
-
-    public Person(Guid id, IReadOnlyList<NameEvent> events)
-    {
-        ArgumentNullException.ThrowIfNull(events);
-
-        Id = id;
-        foreach (var e in events)
-        {
-            Apply(e);
-        }
-
-        _confirmedVersion = Version;
     }
 
     public string Name
@@ -47,27 +44,26 @@ public class Person
         set
         {
             var e = new NameEvent { NewName = value };
-            _unconfirmedEvents.Add(e);
-            Apply(e);
+            RaiseEvent(e);
         }
     }
 
-    public int Version { get; private set; }
-    public Guid Id { get; }
-
-    public async Task ConfirmAsync(IPersonStore store)
+    public void NoOp()
     {
-        ArgumentNullException.ThrowIfNull(store);
-
-        await store.AppendAsync(Id, _unconfirmedEvents, _confirmedVersion).ConfigureAwait(false);
-
-        _confirmedVersion = Version;
-        _unconfirmedEvents.Clear();
+        var e = new NoOpEvent { };
+        RaiseEvent(e);
     }
 
-    private void Apply(NameEvent @event)
+    protected override void Apply(PersonEvent @event)
     {
-        _name = @event.NewName;
-        Version++;
+        switch (@event)
+        {
+            case NameEvent ne:
+                _name = ne.NewName;
+                break;
+
+            default:
+                break;
+        }
     }
 }
