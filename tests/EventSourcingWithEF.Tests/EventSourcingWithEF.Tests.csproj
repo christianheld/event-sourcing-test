@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EventSourcingWithEF\EventSourcingWithEF.csproj" />
+    <ProjectReference Include="..\..\src\EventSourcingWithEF\EventSourcing.Sample.csproj" />
   </ItemGroup>
 
 </Project>

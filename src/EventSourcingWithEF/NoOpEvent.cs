@@ -1,4 +1,4 @@
-﻿namespace EventSourcingWithEF;
+namespace EventSourcing.Sample;
 
 public class NoOpEvent : PersonEvent
 {

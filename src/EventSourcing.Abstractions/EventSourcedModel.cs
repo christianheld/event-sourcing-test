@@ -1,7 +1,6 @@
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
-namespace EventSourcingWithEF;
+namespace EventSourcing;
 
 /// <summary>
 /// Base class for a event sourced model
@@ -12,8 +11,7 @@ namespace EventSourcingWithEF;
 /// <typeparam name="TEvent">The type of the event</typeparam>
 public abstract class EventSourcedModel<TEvent> where TEvent : Event
 {
-    //private ImmutableList<TEvent> _confirmedEvents = ImmutableList<TEvent>.Empty;
-    private List<TEvent> _unconfirmedEvents = new();
+    private readonly List<TEvent> _unconfirmedEvents = new();
 
     protected EventSourcedModel(Guid id)
     {

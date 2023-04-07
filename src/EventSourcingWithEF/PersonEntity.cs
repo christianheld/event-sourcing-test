@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
+using EventSourcing.EntitiyFrameworkCore;
+
 using Microsoft.EntityFrameworkCore;
 
-namespace EventSourcingWithEF;
+namespace EventSourcing.Sample;
 
 [Index(nameof(Name))]
 public class PersonEntity : EventEntity<PersonEvent>
@@ -22,10 +24,6 @@ public class PersonStore : EventStore<PersonEntity, PersonEvent>, IPersonStore
     {
     }
 
-    protected override void OnAppended(PersonEntity entity)
-    {
-        base.OnAppended(entity);
-    }
 }
 
 public class Person : EventSourcedModel<PersonEvent>

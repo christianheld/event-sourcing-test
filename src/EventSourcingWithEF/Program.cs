@@ -1,95 +1,97 @@
-// See https://aka.ms/new-console-template for more information
+//See https://aka.ms/new-console-template for more information
 
-using EventSourcingWithEF;
+Console.WriteLine("Hello, World");
 
-using Microsoft.EntityFrameworkCore;
+//using EventSourcing.Sample;
 
-using Npgsql;
+//using Microsoft.EntityFrameworkCore;
 
-var csb = new NpgsqlConnectionStringBuilder
-{
-    Host = "localhost",
-    Username = "postgres",
-    Password = "postgres"
-};
+//using Npgsql;
 
-var contextOptions = new DbContextOptionsBuilder<PersonContext>()
-    .UseNpgsql(csb.ToString())
-    .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
-    .Options;
+//var csb = new NpgsqlConnectionStringBuilder
+//{
+//    Host = "localhost",
+//    Username = "postgres",
+//    Password = "postgres"
+//};
 
-using (var personContext = new PersonContext(contextOptions))
-{
-    await personContext.Database.EnsureCreatedAsync()
-        .ConfigureAwait(false);
-}
+//var contextOptions = new DbContextOptionsBuilder<PersonContext>()
+//    .UseNpgsql(csb.ToString())
+//    .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
+//    .Options;
 
-using (var db = new PersonContext(contextOptions))
-{
-    var count = await db.Persons.CountAsync();
-    Console.WriteLine(count);
+//using (var personContext = new PersonContext(contextOptions))
+//{
+//    await personContext.Database.EnsureCreatedAsync()
+//        .ConfigureAwait(false);
+//}
 
-    var store = new PersonStore(db);
-    var personEntity = await db.Persons
-        .OrderBy(p => p.Id)
-        .LastAsync();
+//using (var db = new PersonContext(contextOptions))
+//{
+//    var count = await db.Persons.CountAsync();
+//    Console.WriteLine(count);
 
-    var events = await store.LoadEventsAsync(personEntity.Id);
-    var person = new Person(personEntity.Id);
-    if (events is not null)
-    {
-        person.Load(events);
-    }
+//    var store = new PersonStore(db);
+//    var personEntity = await db.Persons
+//        .OrderBy(p => p.Id)
+//        .LastAsync();
 
-    Console.WriteLine(person.Id);
-    Console.WriteLine(person.Name);
+//    var events = await store.LoadEventsAsync(personEntity.Id);
+//    var person = new Person(personEntity.Id);
+//    if (events is not null)
+//    {
+//        person.Load(events);
+//    }
 
-    var personStore = new PersonStore(db);
-    for (int i = 0; i < 100; i++)
-    {
-        var id = Guid.NewGuid();
-        var personStream = await personStore.LoadEventsAsync(id).ConfigureAwait(false);
+//    Console.WriteLine(person.Id);
+//    Console.WriteLine(person.Name);
 
-        var person = new Person(id);
-        if (personStream != null)
-        {
-            person.Load(personStream);
-        }
+//    var personStore = new PersonStore(db);
+//    for (int i = 0; i < 100; i++)
+//    {
+//        var id = Guid.NewGuid();
+//        var personStream = await personStore.LoadEventsAsync(id).ConfigureAwait(false);
 
-        for (int j = 0; j < 100; j++)
-        {
-            person.Name = $"Name{j}";
-            person.NoOp();
-        }
+//        var person = new Person(id);
+//        if (personStream != null)
+//        {
+//            person.Load(personStream);
+//        }
 
-        await person.ConfirmAsync(personStore).ConfigureAwait(false);
-    }
+//        for (int j = 0; j < 100; j++)
+//        {
+//            person.Name = $"Name{j}";
+//            person.NoOp();
+//        }
 
-    await db.SaveChangesAsync().ConfigureAwait(false);
+//        await person.ConfirmAsync(personStore).ConfigureAwait(false);
+//    }
 
-
-    //for (int i = 0; i < 10_000; i++)
-    //{
-    //    //if (personStream is { })
-    //    //{
-    //    //    foreach (var item in personStream)
-    //    //    {
-    //    //        Console.WriteLine($"{item.Timestamp}: Changed Name to {item.NewName}");
-    //    //    }
-
-    //    //    Console.WriteLine("====");
-    //    //}
+//    await db.SaveChangesAsync().ConfigureAwait(false);
 
 
-    //    Console.WriteLine($"Name: {person.Name}");
+//    for (int i = 0; i < 10_000; i++)
+//    {
+//        //if (personStream is { })
+//        //{
+//        //    foreach (var item in personStream)
+//        //    {
+//        //        Console.WriteLine($"{item.Timestamp}: Changed Name to {item.NewName}");
+//        //    }
 
-    //    person.Name = $"Name {Guid.NewGuid()}";
-    //    Console.WriteLine($"New Name: {person.Name}");
+//        //    Console.WriteLine("====");
+//        //}
 
-    //    person.NoOp();
 
-    //    await person.ConfirmAsync(personStore).ConfigureAwait(false);
-    //}
+//        Console.WriteLine($"Name: {person.Name}");
 
-    await db.SaveChangesAsync().ConfigureAwait(false);
-}
+//        person.Name = $"Name {Guid.NewGuid()}";
+//        Console.WriteLine($"New Name: {person.Name}");
+
+//        person.NoOp();
+
+//        await person.ConfirmAsync(personStore).ConfigureAwait(false);
+//    }
+
+//    await db.SaveChangesAsync().ConfigureAwait(false);
+//}

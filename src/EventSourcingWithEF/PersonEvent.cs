@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace EventSourcingWithEF;
+namespace EventSourcing.Sample;
 
 [JsonDerivedType(typeof(NameEvent), "name")]
 [JsonDerivedType(typeof(NoOpEvent), "no-op")]

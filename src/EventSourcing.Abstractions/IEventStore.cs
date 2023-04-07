@@ -1,4 +1,4 @@
-namespace EventSourcingWithEF;
+namespace EventSourcing;
 
 /// <summary>
 /// Interface to load and perist events.

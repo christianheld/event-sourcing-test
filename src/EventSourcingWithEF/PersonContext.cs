@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace EventSourcingWithEF;
+namespace EventSourcing.Sample;
 
 public class PersonContext : DbContext
 {
